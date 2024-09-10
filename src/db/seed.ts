@@ -1,46 +1,53 @@
-import { client, db } from ".";
-import { goals, goalsCompletions, users } from "./schema";
-import dayjs from "dayjs";
+import { client, db } from '.'
+import { hash } from '../services/hasher-bcrypt'
+import { goals, goalsCompletions, users } from './schema'
+import dayjs from 'dayjs'
 
 async function seed() {
-  const startOfWeek = dayjs().startOf("week");
+  const startOfWeek = dayjs().startOf('week')
 
-  await db.delete(goalsCompletions);
-  await db.delete(goals);
-  await db.delete(users);
+  await db.delete(goalsCompletions)
+  await db.delete(goals)
+  await db.delete(users)
 
   const seedUser = await db
     .insert(users)
-    .values([{ email: "email@email.com", password: "password" }])
-    .returning();
+    .values([
+      {
+        name: 'Boogie Jones',
+        email: 'email@email.com',
+        password: await hash('password'),
+      },
+    ])
+    .returning()
 
   const seedGoals = await db
     .insert(goals)
     .values([
       {
-        title: "Acordar Cedo",
+        title: 'Acordar Cedo',
         desiredWeeklyFrequency: 5,
         userId: seedUser[0].id,
       },
       {
-        title: "Academia",
+        title: 'Academia',
         desiredWeeklyFrequency: 5,
         userId: seedUser[0].id,
       },
       {
-        title: "Estudar",
+        title: 'Estudar',
         desiredWeeklyFrequency: 3,
         userId: seedUser[0].id,
       },
     ])
-    .returning();
+    .returning()
 
   await db.insert(goalsCompletions).values([
     { goalId: seedGoals[0].id, createdAt: startOfWeek.toDate() },
-    { goalId: seedGoals[1].id, createdAt: startOfWeek.add(1, "day").toDate() },
-  ]);
+    { goalId: seedGoals[1].id, createdAt: startOfWeek.add(1, 'day').toDate() },
+  ])
 }
 
 seed().finally(() => {
-  client.end();
-});
+  client.end()
+})
