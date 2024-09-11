@@ -2,3 +2,7 @@ npx drizzle-kit generate
 npx drizzle-kit migrate
 npm run seed
 npx drizzle-kit studio
+
+
+
+em SQL, se utiliza WITH para repartir uma query grande em pedaços menores.
