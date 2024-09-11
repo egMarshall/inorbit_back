@@ -6,8 +6,15 @@ import {
 } from 'fastify-type-provider-zod'
 import { goalsRoutes } from '../routes/goals.routes'
 import { userRoutes } from '../routes/users.routes'
+import fastifyCors from '@fastify/cors'
+import { env } from '../env'
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>()
+
+app.register(fastifyCors, {
+  origin: env.FRONTEND_URL,
+})
+
 app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
 
