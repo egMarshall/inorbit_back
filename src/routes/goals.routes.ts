@@ -5,6 +5,7 @@ import { createGoal } from '../useCases/goals/create-goal'
 import { getWeekPendingGoals } from '../useCases/goals/get-pending-goals'
 import z from 'zod'
 import { addGoalCompletion } from '../useCases/goals/add-goal-completion'
+import { getWeekSummary } from '../useCases/goals/get-week-summary'
 
 export const goalsRoutes: FastifyPluginAsyncZod = async app => {
   app.post(
@@ -78,4 +79,18 @@ export const goalsRoutes: FastifyPluginAsyncZod = async app => {
       }
     }
   )
+
+  app.get('/goals-summary', async request => {
+    const authorization = request.headers.authorization
+    if (!authorization) {
+      throw new Error('Authorization header is missing')
+    }
+    const requestData = verifyToken(authorization)
+
+    const userId = requestData.data.userId
+
+    const weekSummary = await getWeekSummary({ userId })
+
+    return weekSummary
+  })
 }
