@@ -6,4 +6,4 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().url(),
 })
 
-export const env = envSchema.parse(process.env.local)
+export const env = envSchema.parse(process.env)
